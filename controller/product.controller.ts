@@ -1,35 +1,76 @@
-import { IProduct } from "../interface";
+import { Request, Response } from "express";
 import { Product } from "../model";
+import { generateGUID } from "../shared";
 
-import { getDatabase } from "../database";
+export const createProduct = async (req: Request, res: Response) => {
+  try {
+    const productData = {
+      ...req.body,
+      _id: generateGUID(),
+    };
 
-export class ProductController {
-  private collection: any;
-  constructor() {
-    const db = getDatabase();
-    this.collection = db.collection("Products");
+    const product = new Product(productData);
+    const savedProduct = await product.save();
+    res.status(200).json(savedProduct);
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
   }
-  getProductList() {
-    console.log("I am product list!");
-  }
+};
 
-  deleteProduct(productId: string) {
-    console.log("I am delete Product");
+export const getAllProduct = async (req: Request, res: Response) => {
+  try {
+    const products = await Product.find();
+    res.status(200).json(products);
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
   }
+};
 
-  async addProduct(productDetail: IProduct) {
-    try {
-      // const product = new Product(productDetail);
-      // await product.save();
-      // console.log("Product Created!");
-      const result = await this.collection.insertOne(productDetail);
-      console.log("Product Created!", result);
-    } catch (error) {
-      throw error;
+export const getProductById = async (req: Request, res: Response) => {
+  const productId = req.params["id"];
+  try {
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    } else {
+      res.status(200).json(product);
     }
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
   }
+};
 
-  editProductById(productId: string) {
-    console.log("I am edit product Id");
+export const updateProductById = async (req: Request, res: Response) => {
+  const productId = req.params["id"];
+  const updatedProductData = req.body;
+  try {
+    const product = await Product.findByIdAndUpdate(
+      productId,
+      updatedProductData,
+      {
+        runValidators: true,
+        new: true,
+      }
+    );
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    return res.status(200).json(product);
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
   }
-}
+};
+
+export const deleteProductById = async (req: Request, res: Response) => {
+  const productId = req.params["id"];
+  try {
+    const product = await Product.findByIdAndDelete(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    return res.status(200).json(product);
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};

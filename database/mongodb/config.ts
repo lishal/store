@@ -1,35 +1,12 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
+import mongoose from "mongoose";
 import { URI } from "../../constant";
 
-let isConnected: boolean = false;
-
-const client = new MongoClient(URI, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-export async function connectMongoDb() {
-  if (isConnected) {
-    console.log("Already connected to MongoDB.");
-    return client;
-  }
-
+export const connectMongoDb = async () => {
   try {
-    await client.connect();
-    isConnected = true;
-    return client;
+    await mongoose.connect(URI);
+    console.log("Connected to MongoDB");
   } catch (err) {
-    isConnected = false;
-    console.warn("Error is:", err);
-    throw err;
+    console.error("Failed to connect to MongoDB", err);
+    process.exit(1);
   }
-}
-
-export function getDatabase() {
-  if (!isConnected) {
-    throw new Error("You must connect to MongoDB first.");
-  }
-  return client.db();
-}
+};
