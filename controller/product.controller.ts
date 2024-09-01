@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
 import { Product } from "../model";
 import { generateGUID } from "../shared";
-import { successResponse, error404, error400 } from "../response";
+import {
+  successResponse200,
+  errorResponse404,
+  errorResponse400,
+} from "../response";
 import { PRODUCT } from "../constant";
 
 export const createProduct = async (req: Request, res: Response) => {
@@ -13,18 +17,18 @@ export const createProduct = async (req: Request, res: Response) => {
 
     const product = new Product(productData);
     await product.save();
-    return successResponse(res, product);
+    return successResponse200(res, product);
   } catch (error: any) {
-    return error400(res, error.message);
+    return errorResponse400(res, error.message);
   }
 };
 
 export const getAllProduct = async (req: Request, res: Response) => {
   try {
     const products = await Product.find();
-    return successResponse(res, products);
+    return successResponse200(res, products);
   } catch (error: any) {
-    return error400(res, error.message);
+    return errorResponse400(res, error.message);
   }
 };
 
@@ -33,12 +37,12 @@ export const getProductById = async (req: Request, res: Response) => {
   try {
     const product = await Product.findById(productId);
     if (!product) {
-      return error404(res, PRODUCT);
+      return errorResponse404(res, PRODUCT);
     } else {
-      return successResponse(res, product);
+      return successResponse200(res, product);
     }
   } catch (error: any) {
-    return error400(res, error.message);
+    return errorResponse400(res, error.message);
   }
 };
 
@@ -56,11 +60,11 @@ export const updateProductById = async (req: Request, res: Response) => {
     );
 
     if (!product) {
-      return error404(res, PRODUCT);
+      return errorResponse404(res, PRODUCT);
     }
-    return successResponse(res, product);
+    return successResponse200(res, product);
   } catch (error: any) {
-    return error400(res, error.message);
+    return errorResponse400(res, error.message);
   }
 };
 
@@ -69,10 +73,10 @@ export const deleteProductById = async (req: Request, res: Response) => {
   try {
     const product = await Product.findByIdAndDelete(productId);
     if (!product) {
-      return error404(res, PRODUCT);
+      return errorResponse404(res, PRODUCT);
     }
-    return successResponse(res, product);
+    return successResponse200(res, product);
   } catch (error: any) {
-    return error400(res, error.message);
+    return errorResponse400(res, error.message);
   }
 };
