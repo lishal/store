@@ -8,6 +8,11 @@ import {
 } from "../response";
 import { PRODUCT } from "../constant";
 
+/**
+@description create product
+@route POST /create-product
+@access private
+**/
 export const createProduct = async (req: Request, res: Response) => {
   try {
     const productData = {
@@ -23,6 +28,11 @@ export const createProduct = async (req: Request, res: Response) => {
   }
 };
 
+/**
+@description get products
+@route GET /products
+@access private
+**/
 export const getAllProduct = async (req: Request, res: Response) => {
   try {
     const products = await Product.find();
@@ -32,6 +42,12 @@ export const getAllProduct = async (req: Request, res: Response) => {
   }
 };
 
+
+/**
+@description get product details
+@route GET /:id
+@access private
+**/
 export const getProductById = async (req: Request, res: Response) => {
   const productId = req.params["id"];
   try {
@@ -46,6 +62,12 @@ export const getProductById = async (req: Request, res: Response) => {
   }
 };
 
+
+/**
+@description update product
+@route PUT /:id
+@access private
+**/
 export const updateProductById = async (req: Request, res: Response) => {
   const productId = req.params["id"];
   const updatedProductData = req.body;
@@ -68,6 +90,12 @@ export const updateProductById = async (req: Request, res: Response) => {
   }
 };
 
+
+/**
+@description delete product
+@route DELETE /:id
+@access private
+**/
 export const deleteProductById = async (req: Request, res: Response) => {
   const productId = req.params["id"];
   try {
