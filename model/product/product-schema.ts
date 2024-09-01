@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { generateGUID } from "../shared/index";
+import { generateGUID } from "../../shared/index";
 
 const { Schema } = mongoose;
 
