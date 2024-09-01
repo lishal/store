@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { Product } from "../model";
 import { generateGUID } from "../shared";
+import { successResponse, error404, error400 } from "../response";
+import { PRODUCT } from "../constant";
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
@@ -10,19 +12,19 @@ export const createProduct = async (req: Request, res: Response) => {
     };
 
     const product = new Product(productData);
-    const savedProduct = await product.save();
-    res.status(200).json(savedProduct);
+    await product.save();
+    return successResponse(res, product);
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    return error400(res, error.message);
   }
 };
 
 export const getAllProduct = async (req: Request, res: Response) => {
   try {
     const products = await Product.find();
-    res.status(200).json(products);
+    return successResponse(res, products);
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    return error400(res, error.message);
   }
 };
 
@@ -31,12 +33,12 @@ export const getProductById = async (req: Request, res: Response) => {
   try {
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ message: "Product not found." });
+      return error404(res, PRODUCT);
     } else {
-      res.status(200).json(product);
+      return successResponse(res, product);
     }
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    return error400(res, error.message);
   }
 };
 
@@ -54,11 +56,11 @@ export const updateProductById = async (req: Request, res: Response) => {
     );
 
     if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+      return error404(res, PRODUCT);
     }
-    return res.status(200).json(product);
+    return successResponse(res, product);
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    return error400(res, error.message);
   }
 };
 
@@ -67,10 +69,10 @@ export const deleteProductById = async (req: Request, res: Response) => {
   try {
     const product = await Product.findByIdAndDelete(productId);
     if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+      return error404(res, PRODUCT);
     }
-    return res.status(200).json(product);
+    return successResponse(res, product);
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    return error400(res, error.message);
   }
 };
