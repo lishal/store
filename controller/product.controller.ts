@@ -42,7 +42,6 @@ export const getAllProduct = async (req: Request, res: Response) => {
   }
 };
 
-
 /**
 @description get product details
 @route GET /:id
@@ -61,7 +60,6 @@ export const getProductById = async (req: Request, res: Response) => {
     return errorResponse400(res, error.message);
   }
 };
-
 
 /**
 @description update product
@@ -89,7 +87,6 @@ export const updateProductById = async (req: Request, res: Response) => {
     return errorResponse400(res, error.message);
   }
 };
-
 
 /**
 @description delete product
