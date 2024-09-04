@@ -1,1 +1,1 @@
-export * from "./product.modal";
+export * from "./product/product.modal";

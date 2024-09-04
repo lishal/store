@@ -1,35 +1,107 @@
-import { IProduct } from "../interface";
+import { Request, Response } from "express";
 import { Product } from "../model";
+import { generateGUID } from "../shared";
+import {
+  successResponse200,
+  errorResponse404,
+  errorResponse400,
+} from "../response";
+import { PRODUCT } from "../constant";
 
-import { getDatabase } from "../database";
+/**
+@description create product
+@route POST /create-product
+@access private
+**/
+export const createProduct = async (req: Request, res: Response) => {
+  try {
+    const productData = {
+      ...req.body,
+      _id: generateGUID(),
+    };
 
-export class ProductController {
-  private collection: any;
-  constructor() {
-    const db = getDatabase();
-    this.collection = db.collection("Products");
+    const product = new Product(productData);
+    await product.save();
+    return successResponse200(res, product);
+  } catch (error: any) {
+    return errorResponse400(res, error.message);
   }
-  getProductList() {
-    console.log("I am product list!");
-  }
+};
 
-  deleteProduct(productId: string) {
-    console.log("I am delete Product");
+/**
+@description get products
+@route GET /products
+@access private
+**/
+export const getAllProduct = async (req: Request, res: Response) => {
+  try {
+    const products = await Product.find();
+    return successResponse200(res, products);
+  } catch (error: any) {
+    return errorResponse400(res, error.message);
   }
+};
 
-  async addProduct(productDetail: IProduct) {
-    try {
-      // const product = new Product(productDetail);
-      // await product.save();
-      // console.log("Product Created!");
-      const result = await this.collection.insertOne(productDetail);
-      console.log("Product Created!", result);
-    } catch (error) {
-      throw error;
+/**
+@description get product details
+@route GET /:id
+@access private
+**/
+export const getProductById = async (req: Request, res: Response) => {
+  const productId = req.params["id"];
+  try {
+    const product = await Product.findById(productId);
+    if (!product) {
+      return errorResponse404(res, PRODUCT);
+    } else {
+      return successResponse200(res, product);
     }
+  } catch (error: any) {
+    return errorResponse400(res, error.message);
   }
+};
 
-  editProductById(productId: string) {
-    console.log("I am edit product Id");
+/**
+@description update product
+@route PUT /:id
+@access private
+**/
+export const updateProductById = async (req: Request, res: Response) => {
+  const productId = req.params["id"];
+  const updatedProductData = req.body;
+  try {
+    const product = await Product.findByIdAndUpdate(
+      productId,
+      updatedProductData,
+      {
+        runValidators: true,
+        new: true,
+      }
+    );
+
+    if (!product) {
+      return errorResponse404(res, PRODUCT);
+    }
+    return successResponse200(res, product);
+  } catch (error: any) {
+    return errorResponse400(res, error.message);
   }
-}
+};
+
+/**
+@description delete product
+@route DELETE /:id
+@access private
+**/
+export const deleteProductById = async (req: Request, res: Response) => {
+  const productId = req.params["id"];
+  try {
+    const product = await Product.findByIdAndDelete(productId);
+    if (!product) {
+      return errorResponse404(res, PRODUCT);
+    }
+    return successResponse200(res, product);
+  } catch (error: any) {
+    return errorResponse400(res, error.message);
+  }
+};
