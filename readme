@@ -1,0 +1,6 @@
+Manual to execute
+
+step 1: npm install
+step 2: Install mongodb compass in your system
+step 3: create a new connection and create a cluster as store
+step 4: npm start
