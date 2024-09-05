@@ -10,11 +10,11 @@ export const ProductSchema = new Schema(
     },
     name: {
       type: String,
-      required: [true, "Please enter product name"],
+      required: [true, "please provide product name"],
     },
     price: {
       type: Number,
-      required: [true, "Please enter product price"],
+      required: [true, "please provide product price"],
     },
   },
   {
