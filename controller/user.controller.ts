@@ -1,4 +1,4 @@
-import { bcrypt } from 'bcrypt';
+import bcrypt from 'bcrypt';
 import { User } from '../model'
 import { created, handleError, notFoundError, validationError } from '../response';
 import { Response, Request } from "express";
