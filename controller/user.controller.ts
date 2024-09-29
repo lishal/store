@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
 import { User } from '../model'
-import { created, handleError, notFoundError, validationError } from '../response';
+import { created, handleError, notFoundError, succeeded, validationError } from '../response';
 import { Response, Request } from "express";
+import jwt from "jsonwebtoken";
 
 
 /**
@@ -56,9 +57,37 @@ export const loginUser = async (req: Request, res: Response) => {
             return notFoundError(res, "Invalid username or password");
         }
 
-        // TODO: create token and respond to the user
+        if (user && (await bcrypt.compare(password, user.password))) {
+            const accessToken = jwt.sign(
+                {
+                    user: {
+                        username: user.username,
+                        email: user.email,
+                        id: user.id
+                    }
+                },
+                process.env.ACCESS_TOKEN_STRING,
+                { expiresIn: "15m" }
+            )
+            return succeeded(res, accessToken);
+        }else{
+            return validationError(res, "Email or password not valid");
+        }
 
     } catch (error: unknown) {
         return handleError(res, error);
+    }
+}
+
+/**
+@description get current user
+@route POST /user/current
+@access public
+*/
+export const getCurrentUser = async(req, res) =>{
+    try{
+        return succeeded(res, req.user);
+    }catch(error){
+        return validationError(res, res.message)
     }
 }
