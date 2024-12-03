@@ -5,6 +5,7 @@ import {
   succeeded,
   notFoundError,
   validationError,
+  handleError,
   created,
 } from "../response";
 import { PRODUCT } from "../constant";
@@ -16,16 +17,16 @@ import { PRODUCT } from "../constant";
 **/
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const productData = {
-      ...req.body,
-      _id: generateGUID(),
-    };
-
+    const { name, price } = req.body;
+    if (!name || !price) {
+      return validationError(res, "All fields are required");
+    }
+    const productData = { name, price, _id: generateGUID() };
     const product = new Product(productData);
     await product.save();
     return created(res, product);
-  } catch (error: any) {
-    return validationError(res, error.message);
+  } catch (error: unknown) {
+    return handleError(res, error);
   }
 };
 
@@ -38,8 +39,8 @@ export const getAllProduct = async (req: Request, res: Response) => {
   try {
     const products = await Product.find();
     return succeeded(res, products);
-  } catch (error: any) {
-    return validationError(res, error.message);
+  } catch (error: unknown) {
+    return handleError(res, error);
   }
 };
 
@@ -57,8 +58,8 @@ export const getProductById = async (req: Request, res: Response) => {
     } else {
       return succeeded(res, product);
     }
-  } catch (error: any) {
-    return validationError(res, error.message);
+  } catch (error: unknown) {
+    return handleError(res, error);
   }
 };
 
@@ -84,8 +85,8 @@ export const updateProductById = async (req: Request, res: Response) => {
       return notFoundError(res, PRODUCT);
     }
     return succeeded(res, product);
-  } catch (error: any) {
-    return validationError(res, error.message);
+  } catch (error: unknown) {
+    return handleError(res, error);
   }
 };
 
@@ -102,7 +103,7 @@ export const deleteProductById = async (req: Request, res: Response) => {
       return notFoundError(res, PRODUCT);
     }
     return succeeded(res, product);
-  } catch (error: any) {
-    return validationError(res, error.message);
+  } catch (error: unknown) {
+    return handleError(res, error);
   }
 };
